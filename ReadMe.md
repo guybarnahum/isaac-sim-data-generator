@@ -47,7 +47,7 @@ The script will automatically detect these categories and apply the correspondin
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/isaac-sim-data-generator.git
+    git clone https://github.com/<username>/isaac-sim-data-generator.git
     cd isaac-sim-data-generator
     ```
 

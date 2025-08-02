@@ -37,7 +37,6 @@ from pxr import Gf, UsdGeom
 from isaacsim.core.utils.stage import get_current_stage, add_reference_to_stage
 import omni.replicator.core as rep
 from isaacsim.core.utils.bounds import compute_combined_aabb, create_bbox_cache
-# MODIFICATION: Import the correct, stable function for adding semantics
 from isaacsim.core.utils.semantics import add_update_semantics
 
 # Increase subframes for better moving-object rendering
@@ -63,6 +62,18 @@ def find_categorized_usdz_files(root_dir):
                     full_path = os.path.join(category_path, file)
                     categorized_files.append((category.lower(), full_path))
     return categorized_files
+
+def random_point_on_hemisphere(min_radius, max_radius):
+    radius = random.uniform(min_radius, max_radius)
+    phi = random.uniform(0, math.pi)
+    theta = random.uniform(0, 2 * math.pi)
+    x = radius * math.sin(phi) * math.cos(theta)
+    y = radius * math.sin(phi) * math.sin(theta)
+    z = abs(radius * math.cos(phi))
+    return x, y, z
+
+def generate_points_on_hemisphere(min_radius, max_radius, num_points):
+    return [random_point_on_hemisphere(min_radius, max_radius) for _ in range(num_points)]
 
 def run_orchestrator():
     rep.orchestrator.run()
@@ -95,7 +106,7 @@ def main():
             parent_prim_path = f"/World/Asset_Container_{i}"
             container_prim = stage.DefinePrim(parent_prim_path, "Xform")
 
-            # FINAL FIX: Add semantics to the parent container prim using the core API
+            # Add semantics to the parent container prim using the core API
             add_update_semantics(container_prim, asset_type)
 
             model_prim_path = f"{parent_prim_path}/model"
@@ -105,19 +116,22 @@ def main():
             model_prim = stage.GetPrimAtPath(model_prim_path)
             model_xform = UsdGeom.Xformable(model_prim)
             
-            model_xform.AddRotateXOp().Set(90.0) # Y-up to Z-up correction
+            # Apply a one-time corrective rotation to convert from Y-up to Z-up
+            model_xform.AddRotateXOp().Set(90.0)
             simulation_app.update()
 
             bounds = compute_combined_aabb(bbox_cache=bbox_cache, prim_paths=[model_prim_path])
             size = bounds[3:6] - bounds[0:3]
 
             if all(s > 0.001 for s in size):
+                # Apply scale normalization
                 largest_dimension = max(size)
                 desired_size = TARGET_SIZES.get(asset_type, DEFAULT_SIZE)
                 scale_factor = desired_size / largest_dimension
                 model_xform.AddScaleOp().Set(Gf.Vec3f(scale_factor, scale_factor, scale_factor))
                 simulation_app.update()
 
+                # Apply final pivot correction
                 final_bounds = compute_combined_aabb(bbox_cache=bbox_cache, prim_paths=[model_prim_path])
                 final_lowest_point_z = final_bounds[2]
                 offset_vector = Gf.Vec3f(0, 0, -final_lowest_point_z)
@@ -137,7 +151,7 @@ def main():
 
     # --- Per-Frame Randomization ---
     camera = rep.create.camera(clipping_range=(0.1, 1000000))
-    camera_positions = [random_point_on_hemisphere(3.0, 8.0) for _ in range(args.num_frames * 2)]
+    camera_positions = generate_points_on_hemisphere(3.0, 8.0, args.num_frames * 2)
 
     with rep.trigger.on_frame(num_frames=args.num_frames):
         with camera:
@@ -151,7 +165,6 @@ def main():
 
     # --- Data Writing ---
     writer = rep.WriterRegistry.get("KittiWriter")
-    # Use the same writer settings as the reference script
     writer.initialize(output_dir=args.data_dir, omit_semantic_type=True)
                       
     render_product = rep.create.render_product(camera, (args.width, args.height))

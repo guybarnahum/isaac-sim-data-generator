@@ -37,6 +37,7 @@ from pxr import Gf, UsdGeom
 from isaacsim.core.utils.stage import get_current_stage, add_reference_to_stage
 import omni.replicator.core as rep
 from isaacsim.core.utils.bounds import compute_combined_aabb, create_bbox_cache
+from isaacsim.core.utils.semantics import add_update_semantics
 
 # Increase subframes for better moving-object rendering
 rep.settings.carb_settings("/omni/replicator/RTSubframes", 4)
@@ -46,53 +47,13 @@ TARGET_SIZES = {'car': 3.0, 'person': 1.7}
 DEFAULT_SIZE = 1.0
 
 
-# --- Helper and Validation Functions ---
-def validate_setup(asset_dir):
-    """
-    Checks for common setup issues before starting the main simulation.
-    Returns True if setup is valid, False otherwise.
-    """
-    print("--- Validating Setup ---")
-    # 1. Check if the main asset directory exists
-    if not os.path.isdir(asset_dir):
-        carb.log_error(f"Validation failed: The asset directory specified does not exist.")
-        carb.log_error(f"  > Path: '{asset_dir}'")
-        carb.log_error(f"  > Please ensure the '--asset_dir' argument points to a valid directory.")
-        return False
-
-    # 2. Check if the asset directory contains any subdirectories
-    subdirs = [d for d in os.listdir(asset_dir) if os.path.isdir(os.path.join(asset_dir, d))]
-    if not subdirs:
-        carb.log_error(f"Validation failed: The asset directory is empty or contains no subdirectories.")
-        carb.log_error(f"  > Path: '{asset_dir}'")
-        carb.log_error(f"  > Please create subdirectories for each asset class (e.g., 'car', 'person').")
-        return False
-        
-    print(f"  - Found class subdirectories: {subdirs}")
-
-    # 3. Check if any .usdz files exist within the subdirectories
-    found_usdz = False
-    for subdir in subdirs:
-        for file in os.listdir(os.path.join(asset_dir, subdir)):
-            if file.lower().endswith(".usdz"):
-                found_usdz = True
-                break
-        if found_usdz:
-            break
-            
-    if not found_usdz:
-        carb.log_error(f"Validation failed: No '.usdz' files were found inside any of the class subdirectories.")
-        carb.log_error(f"  > Path: '{asset_dir}'")
-        carb.log_error(f"  > Please add your asset files to their corresponding class folders.")
-        return False
-
-    print("  - Found .usdz files.")
-    print("--- Validation Successful ---")
-    return True
-
+# --- Helper Functions ---
 def find_categorized_usdz_files(root_dir):
-    """Scans subdirectories to find and categorize .usdz files."""
     categorized_files = []
+    if not os.path.isdir(root_dir):
+        carb.log_error(f"Asset root directory not found at: {root_dir}")
+        return categorized_files
+
     for category in os.listdir(root_dir):
         category_path = os.path.join(root_dir, category)
         if os.path.isdir(category_path):
@@ -115,7 +76,6 @@ def generate_points_on_hemisphere(min_radius, max_radius, num_points):
     return [random_point_on_hemisphere(min_radius, max_radius) for _ in range(num_points)]
 
 def run_orchestrator():
-    """Starts and manages the Replicator pipeline execution."""
     rep.orchestrator.run()
     while rep.orchestrator.get_is_started():
         simulation_app.update()
@@ -124,11 +84,6 @@ def run_orchestrator():
 
 # --- Main Logic ---
 def main():
-    """Main function to coordinate the data generation pipeline."""
-    # Run pre-flight checks before initializing the full scene
-    if not validate_setup(args.asset_dir):
-        return # Exit early if setup is invalid
-
     stage = get_current_stage()
     bbox_cache = create_bbox_cache()
     
@@ -142,12 +97,17 @@ def main():
 
     # --- Asset Loading and Normalization (Done Once) ---
     categorized_assets = find_categorized_usdz_files(args.asset_dir)
+    if not categorized_assets:
+        return
+
     parent_containers = []
-    print("Loading, normalizing, and correcting pivots for assets...")
     for i, (asset_type, usdz_path) in enumerate(categorized_assets):
         try:
             parent_prim_path = f"/World/Asset_Container_{i}"
             container_prim = stage.DefinePrim(parent_prim_path, "Xform")
+
+            # Add semantics to the parent container prim using the core API
+            add_update_semantics(container_prim, asset_type)
 
             model_prim_path = f"{parent_prim_path}/model"
             add_reference_to_stage(usd_path=usdz_path, prim_path=model_prim_path)
@@ -156,19 +116,22 @@ def main():
             model_prim = stage.GetPrimAtPath(model_prim_path)
             model_xform = UsdGeom.Xformable(model_prim)
             
-            model_xform.AddRotateXOp().Set(90.0) # Y-up to Z-up correction
+            # Apply a one-time corrective rotation to convert from Y-up to Z-up
+            model_xform.AddRotateXOp().Set(90.0)
             simulation_app.update()
 
             bounds = compute_combined_aabb(bbox_cache=bbox_cache, prim_paths=[model_prim_path])
             size = bounds[3:6] - bounds[0:3]
 
             if all(s > 0.001 for s in size):
+                # Apply scale normalization
                 largest_dimension = max(size)
                 desired_size = TARGET_SIZES.get(asset_type, DEFAULT_SIZE)
                 scale_factor = desired_size / largest_dimension
                 model_xform.AddScaleOp().Set(Gf.Vec3f(scale_factor, scale_factor, scale_factor))
                 simulation_app.update()
 
+                # Apply final pivot correction
                 final_bounds = compute_combined_aabb(bbox_cache=bbox_cache, prim_paths=[model_prim_path])
                 final_lowest_point_z = final_bounds[2]
                 offset_vector = Gf.Vec3f(0, 0, -final_lowest_point_z)
@@ -184,7 +147,6 @@ def main():
             traceback.print_exc()
 
     if not parent_containers:
-        carb.log_error("Failed to load any valid assets after processing. Exiting.")
         return
 
     # --- Per-Frame Randomization ---
@@ -204,6 +166,7 @@ def main():
     # --- Data Writing ---
     writer = rep.WriterRegistry.get("KittiWriter")
     writer.initialize(output_dir=args.data_dir, omit_semantic_type=True)
+                      
     render_product = rep.create.render_product(camera, (args.width, args.height))
     writer.attach(render_product)
 
@@ -220,7 +183,6 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
     finally:
-        # Only close the application if running in headless mode
         if args.headless:
             simulation_app.close()
         else:

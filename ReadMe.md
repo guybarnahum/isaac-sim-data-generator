@@ -42,18 +42,28 @@ To use this script, you must organize your .usdz asset files into subdirectories
 Example: Place all car models in assets/car/ and all person models in assets/person/.
 The script will automatically detect these categories and apply the corresponding scaling rules defined in randomize.py.
 
-## Setup ##
 
-Place the Scripts: Put randomize.py and generate_data.sh in a project directory (e.g., /home/user/isaac-project/).
-Organize Assets: Create an assets directory in the same location and populate it with your categorized .usdz files as described above.
-Configure Paths: Open generate_data.sh and randomize.py in a text editor and verify that the paths at the top of each file are correct for your system.
-In generate_data.sh, ensure ISAAC_SIM_PATH points to your Isaac Sim installation directory.
-In randomize.py, ensure the default value for --asset_dir points to your assets folder.
+### **Quick Start**
 
-Make Executable: Grant execution permissions to the bash script:
-```bash
-chmod +x generate_data.sh
-```
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/your-username/isaac-sim-data-generator.git
+    cd isaac-sim-data-generator
+    ```
+
+2.  **Configure Your Environment:**
+    Copy the example configuration file to a new `.env` file.
+    ```bash
+    cp .env.example .env
+    ```
+    Now, open `.env` with a text editor and set the `ISAAC_SIM_PATH` and `PROJECT_ROOT_PATH` variables to match your system's paths.
+
+3.  **Run the Script:**
+    Make the script executable and run it.
+    ```bash
+    chmod +x generate_data.sh
+    ./generate_data.sh --headless --num_frames=100
+    ```
 
 ## Usage ##
 

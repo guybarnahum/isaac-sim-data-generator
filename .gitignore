@@ -12,3 +12,6 @@ __pycache__/
 
 # Ignore user-specific environment configuration
 .env
+
+# Ignore Mac files
+**/.DS_Store

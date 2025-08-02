@@ -88,6 +88,6 @@ Generate a large dataset of 20,000 frames in headless mode:
 ./generate_data.sh --headless --num_frames=20000
 ```
 
-== Output ==
+## Output ##
 
 The generated dataset will be saved in the directory specified by the OUTPUT_DIR variable in generate_data.sh. The output format is Kitti, which will include folders for rgb images and potentially other data types like bounding boxes if configured.

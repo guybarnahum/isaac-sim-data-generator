@@ -24,6 +24,7 @@ orientation, and pivot point correction.
 ```bash
 
 .
+├── .env.example
 ├── assets/
 │   ├── car/
 │   │   ├── car_1.usdz
@@ -32,7 +33,10 @@ orientation, and pivot point correction.
 │       ├── person_1.usdz
 │       └── person_2.usdz
 ├── generate_data.sh
-└── randomize.py
+├── randomize.py
+└── examples
+    ├── kitt-dataset/
+    └── yolo-dataset/
 
 ```
 

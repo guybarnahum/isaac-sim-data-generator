@@ -42,10 +42,9 @@ orientation, and pivot point correction.
 
 ## Asset Location ##
 
-To use this script, you must organize your .usdz asset files into subdirectories within the assets/ folder. The name of each subdirectory will be used as the class label for all assets within it.
-Example: Place all car models in assets/car/ and all person models in assets/person/.
-The script will automatically detect these categories and apply the corresponding scaling rules defined in randomize.py.
-
+To use this script, you must organize your `.usdz` asset files into subdirectories within the `assets/ folder`. The name of each subdirectory will be used as the class label for all assets within it.
+Example: Place all car models in `assets/car/` and all person models in `assets/person/`.
+The script will automatically detect these categories and apply the corresponding scaling rules defined in `randomize.py`.
 
 ### **Quick Start**
 

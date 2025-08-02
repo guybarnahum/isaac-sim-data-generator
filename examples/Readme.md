@@ -10,15 +10,14 @@ The generated data is organized into a main folder, `kitti-dataset`, which conta
 
 ### **1. RGB Images**
 
-This is the primary visual output of the simulation.
+This is the primary visual output of the simulation. Notice how the camera position and the placement and rotation of the assets change in every frame.
 
 -   **Location:** `kitti-dataset/Camera/rgb/`
 -   **Format:** `.png`
--   **Description:** Standard color images of the scene.
 
-| Example RGB Image (`rgb/0.png`) |
-| :----------------------------------------------------------: |
-| <img src="kitti-dataset/Camera/rgb/0.png" alt="Sample RGB Image" width="600"/> |
+| Frame 0 | Frame 1 | Frame 2 |
+| :---: | :---: | :---: |
+| <img src="kitti-dataset/Camera/rgb/0.png" alt="RGB Frame 0" width="250"/> | <img src="kitti-dataset/Camera/rgb/1.png" alt="RGB Frame 1" width="250"/> | <img src="kitti-dataset/Camera/rgb/2.png" alt="RGB Frame 2" width="250"/> |
 
 ---
 
@@ -28,7 +27,6 @@ This is the core data used for training object detection models. It contains the
 
 -   **Location:** `kitti-dataset/Camera/object_detection/`
 -   **Format:** `.txt`
--   **Description:** Each line in a text file corresponds to a single object in the frame. The format includes both 2D and 3D bounding box information.
 
 **Format:**
 `class_name truncated occluded alpha bbox_xmin bbox_ymin bbox_xmax bbox_ymax h w l x y z ry`
@@ -49,15 +47,15 @@ person 0.00 0 0.00 450.00 200.00 500.00 350.00 1.70 0.60 0.50 4.80 -1.20 9.50 -0
 
 ### **3. Depth Maps**
 
-Depth maps provide the distance from the camera to every pixel in the scene.
+Depth maps provide the distance from the camera to every pixel in the scene. Brighter pixels are closer to the camera, and darker pixels are farther away.
 
 -   **Location:** `kitti-dataset/Camera/depth/`
 -   **Format:** `.png`
--   **Description:** Grayscale images where pixel intensity corresponds to distance. Brighter pixels are closer to the camera, and darker pixels are farther away.
 
-| Example Depth Map (`depth/0.png`) |
-| :----------------------------------------------------------: |
-| <img src="kitti-dataset/Camera/depth/0.png" alt="Sample Depth Map" width="600"/> |
+| Frame 0 | Frame 1 | Frame 2 |
+| :---: | :---: | :---: |
+| <img src="kitti-dataset/Camera/depth/0.png" alt="Depth Frame 0" width="250"/> | <img src="kitti-dataset/Camera/depth/1.png" alt="Depth Frame 1" width="250"/> | <img src="kitti-dataset/Camera/depth/2.png" alt="Depth Frame 2" width="250"/> |
+
 
 ---
 
@@ -65,11 +63,22 @@ Depth maps provide the distance from the camera to every pixel in the scene.
 
 The writer generates several types of segmentation masks, which are useful for different machine learning tasks. Each type uses color to identify different elements in the scene.
 
-| Semantic Segmentation (`semantic_segmentation/0.png`) | Instance Segmentation (`instance_segmentation/0.png`) |
-| :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="kitti-dataset/Camera/semantic_segmentation/0.png" alt="Sample Semantic Segmentation" width="400"/> | <img src="kitti-dataset/Camera/instance_segmentation/0.png" alt="Sample Instance Segmentation" width="400"/> |
+#### **Semantic Segmentation**
+Assigns a specific color to every pixel based on its **class**. All `car` objects will be one color, and all `person` objects will be another.
 
--   **Semantic Segmentation (`semantic_segmentation/`)**
-    -   **Purpose:** Assigns a specific color to every pixel based on its **class**. For example, all `car` objects will be one color, and all `person` objects will be another color. The ground plane will have its own color.
--   **Instance Segmentation (`instance_segmentation/`)**
-    -   **Purpose:** Assigns a unique color to each **instance** of an object. For example, if there are two cars in the scene, they will have two different colors to distinguish them from each other.
+-   **Location:** `kitti-dataset/Camera/semantic_segmentation/`
+-   **Format:** `.png`
+
+| Frame 0 | Frame 1 | Frame 2 |
+| :---: | :---: | :---: |
+| <img src="kitti-dataset/Camera/semantic_segmentation/0.png" alt="Semantic Frame 0" width="250"/> | <img src="kitti-dataset/Camera/semantic_segmentation/1.png" alt="Semantic Frame 1" width="250"/> | <img src="kitti-dataset/Camera/semantic_segmentation/2.png" alt="Semantic Frame 2" width="250"/> |
+
+#### **Instance Segmentation**
+Assigns a unique color to each **instance** of an object. If there are two cars in the scene, they will have two different colors to distinguish them.
+
+-   **Location:** `kitti-dataset/Camera/instance_segmentation/`
+-   **Format:** `.png`
+
+| Frame 0 | Frame 1 | Frame 2 |
+| :---: | :---: | :---: |
+| <img src="kitti-dataset/Camera/instance_segmentation/0.png" alt="Instance Frame 0" width="250"/> | <img src="kitti-dataset/Camera/instance_segmentation/1.png" alt="Instance Frame 1" width="250"/> | <img src="kitti-dataset/Camera/instance_segmentation/2.png" alt="Instance Frame 2" width="250"/> |

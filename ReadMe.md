@@ -2,7 +2,7 @@ This script was adapted from an original NVIDIA working example, it has been sig
 (like the Nucleus server) and to programmatically handle common issues in procedural content generation, such as asset scaling, 
 orientation, and pivot point correction.
 
-== Key Features ==
+## Key Features ##
 
 - Local Asset Loading: Loads .usdz files directly from a local directory structure, removing the need for an Omniverse Nucleus server.
 
@@ -20,7 +20,7 @@ orientation, and pivot point correction.
 
 - Flexible Execution: Can be run in either GUI mode for scene inspection or headless mode for automated data generation, controlled via command-line arguments.
 
-== Project Structure ==
+## Project Structure ##
 ```bash
 
 .
@@ -36,13 +36,13 @@ orientation, and pivot point correction.
 
 ```
 
-== Asset Location ==
+## Asset Location ##
 
 To use this script, you must organize your .usdz asset files into subdirectories within the assets/ folder. The name of each subdirectory will be used as the class label for all assets within it.
 Example: Place all car models in assets/car/ and all person models in assets/person/.
 The script will automatically detect these categories and apply the corresponding scaling rules defined in randomize.py.
 
-== Setup ==
+## Setup ##
 
 Place the Scripts: Put randomize.py and generate_data.sh in a project directory (e.g., /home/user/isaac-project/).
 Organize Assets: Create an assets directory in the same location and populate it with your categorized .usdz files as described above.
@@ -55,11 +55,11 @@ Make Executable: Grant execution permissions to the bash script:
 chmod +x generate_data.sh
 ```
 
-== Usage ==
+## Usage ##
 
 The generate_data.sh script is the primary way to run the simulation. It accepts two optional command-line arguments.
 
-=== Running in GUI Mode (for Inspection) ===
+### Running in GUI Mode (for Inspection) ###
 
 To run the script and have the Isaac Sim application window remain open after the data is generated, simply run the script without any arguments. This is ideal for checking lighting, asset placement, and scale.
 
@@ -73,7 +73,7 @@ You can also specify the number of frames to generate:
 ./generate_data.sh --num_frames=50
 ```
 
-=== Running in Headless Mode (for Data Generation) ===
+### Running in Headless Mode (for Data Generation) ###
 
 To run the script in the background for generating large datasets, use the --headless flag. The application will automatically close when it's finished.
 

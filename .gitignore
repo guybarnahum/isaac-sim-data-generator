@@ -1,0 +1,11 @@
+# Ignore the generated output data
+output/
+local_asset_output/
+
+# Ignore the 3D asset files
+# (These are often large and should be managed separately from code)
+assets/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc

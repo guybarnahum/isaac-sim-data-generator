@@ -9,3 +9,6 @@ assets/
 # Ignore Python cache files
 __pycache__/
 *.pyc
+
+# Ignore user-specific environment configuration
+.env

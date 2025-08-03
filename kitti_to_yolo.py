@@ -11,8 +11,8 @@ It performs the following steps:
 3.  Parses Kitti labels and maps class names to COCO-standard integer IDs.
 4.  Converts Kitti bounding boxes to the normalized YOLO format.
 5.  Copies images and labels into standard YOLO train/valid directories.
-6.  Randomly splits the dataset, creating 'train.txt' and 'valid.txt' with relative paths.
-7.  Generates a 'data.yaml' file, making the dataset ready for immediate training.
+6.  Randomly splits the dataset.
+7.  Generates a portable 'data.yaml' file, making the dataset ready for immediate training.
 """
 
 import os
@@ -72,13 +72,11 @@ def process_dataset(input_dir, train_split):
     kitti_images_path = os.path.join(input_dir, "Camera", "rgb")
     yolo_output_dir = os.path.join(input_dir, "yolo_dataset")
     
-    # Define YOLO subdirectories
     yolo_img_train_path = os.path.join(yolo_output_dir, "images", "train")
     yolo_img_valid_path = os.path.join(yolo_output_dir, "images", "valid")
     yolo_lbl_train_path = os.path.join(yolo_output_dir, "labels", "train")
     yolo_lbl_valid_path = os.path.join(yolo_output_dir, "labels", "valid")
 
-    # Create all necessary directories
     for path in [yolo_img_train_path, yolo_img_valid_path, yolo_lbl_train_path, yolo_lbl_valid_path]:
         os.makedirs(path, exist_ok=True)
         
@@ -88,7 +86,6 @@ def process_dataset(input_dir, train_split):
 
     print(f"Searching for Kitti labels in: {kitti_labels_path}")
     
-    # --- Generate a list of all valid sample file stems ---
     valid_samples = []
     kitti_files = [f for f in os.listdir(kitti_labels_path) if f.endswith('.txt')]
     for filename in kitti_files:
@@ -98,16 +95,13 @@ def process_dataset(input_dir, train_split):
     
     print(f"Found {len(valid_samples)} valid samples with corresponding images and labels.")
     
-    # --- Shuffle and split the dataset ---
     random.shuffle(valid_samples)
     split_index = int(len(valid_samples) * train_split)
     train_samples = valid_samples[:split_index]
     valid_samples = valid_samples[split_index:]
 
-    # --- Process and copy files for each split ---
     print(f"Processing {len(train_samples)} training samples and {len(valid_samples)} validation samples...")
     for split_name, sample_list in [("train", train_samples), ("valid", valid_samples)]:
-        
         yolo_img_path = os.path.join(yolo_output_dir, "images", split_name)
         yolo_lbl_path = os.path.join(yolo_output_dir, "labels", split_name)
         
@@ -116,14 +110,10 @@ def process_dataset(input_dir, train_split):
             source_img_file = os.path.join(kitti_images_path, sample_stem + ".png")
             
             try:
-                # Copy the image file
                 shutil.copy(source_img_file, yolo_img_path)
-                
-                # Read image dimensions
                 with Image.open(source_img_file) as img:
                     img_width, img_height = img.size
                 
-                # Convert the label file
                 yolo_lines = []
                 with open(kitti_lbl_file, 'r') as f:
                     for line in f:
@@ -141,7 +131,6 @@ def process_dataset(input_dir, train_split):
                     yolo_lbl_file = os.path.join(yolo_lbl_path, sample_stem + ".txt")
                     with open(yolo_lbl_file, 'w') as f_out:
                         f_out.write("\n".join(yolo_lines))
-
             except Exception as e:
                 print(f"Error processing sample {sample_stem}: {e}")
                 
@@ -149,28 +138,28 @@ def process_dataset(input_dir, train_split):
     
     # --- Generate data.yaml file ---
     print("Generating data.yaml file...")
-    # Sort class names by their ID for consistency
-    class_names = sorted(COCO_CLASS_MAP.keys(), key=lambda k: COCO_CLASS_MAP[k])
     
+    # FINAL FIX: The most robust YAML structure for YOLOv5/v8.
+    # The paths are relative to the data.yaml file's location.
     yaml_data = {
-        'path': os.path.abspath(yolo_output_dir), # Absolute path to the dataset root
-        'train': 'images/train', # Relative path from 'path' to train images
-        'val': 'images/valid', # Relative path from 'path' to validation images
+        'train': 'images/train',
+        'val': 'images/valid',
+        'nc': len(COCO_CLASS_MAP),
         'names': {id: name for name, id in COCO_CLASS_MAP.items()}
     }
-    
+
     yaml_filepath = os.path.join(yolo_output_dir, "data.yaml")
     with open(yaml_filepath, 'w') as f:
         yaml.dump(yaml_data, f, sort_keys=False, default_flow_style=False)
         
     print(f"YOLO dataset successfully created at: {yolo_output_dir}")
+    print(f"Ready for training with: yolo train data={os.path.abspath(yaml_filepath)}")
 
 
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     env_config = load_config_from_env(os.path.join(script_dir, ".env"))
     
-    # Use OUTPUT_DIR from .env if it exists, otherwise use the project root
     project_root = env_config.get("PROJECT_ROOT_PATH", script_dir)
     default_input_dir = env_config.get("OUTPUT_DIR") or os.path.join(project_root, "output")
 
@@ -190,5 +179,4 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    # Run conversion. The output dir is now determined by the input dir.
     process_dataset(args.input_dir, args.train_split)

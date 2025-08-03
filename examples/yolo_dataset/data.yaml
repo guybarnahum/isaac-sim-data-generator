@@ -1,0 +1,6 @@
+train: images/train
+val: images/valid
+nc: 2
+names:
+  0: person
+  2: car

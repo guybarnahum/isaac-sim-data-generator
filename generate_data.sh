@@ -4,8 +4,8 @@
 #                 Isaac Sim Local Asset Data Generator
 # ==============================================================================
 #
-# This script launches the randomize.py script to generate a Kitti dataset
-# and, by default, converts it to the YOLO format.
+# This script launches randomize.py to generate a Kitti dataset inside a unique,
+# timestamped directory, and then converts it to the YOLO format.
 #
 # Usage:
 #   ./generate_data.sh [--headless] [--num_frames=100] [--no-convert]
@@ -44,17 +44,17 @@ if [ ! -d "$PROJECT_ROOT_PATH" ]; then
     log_error_and_exit "Project root path not found at: $PROJECT_ROOT_PATH"
 fi
 
-# --- Define Final Paths ---
+# --- Define Base Paths ---
 RANDOMIZE_SCRIPT_PATH="$PROJECT_ROOT_PATH/randomize.py"
 CONVERT_SCRIPT_PATH="$PROJECT_ROOT_PATH/kitti_to_yolo.py"
 ASSET_DIR="$PROJECT_ROOT_PATH/assets"
-FINAL_OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_ROOT_PATH/output}"
+# Get the base output directory from .env or default it
+BASE_OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_ROOT_PATH/output}"
 
 
 # --- Default Argument Values ---
 HEADLESS_FLAG=""
 NUM_FRAMES=10
-# MODIFICATION: Conversion is now the default
 CONVERT_TO_YOLO=true
 
 
@@ -70,12 +70,19 @@ do
         NUM_FRAMES="${arg#*=}"
         shift
         ;;
-        --no-convert) # MODIFICATION: New flag to SKIP conversion
+        --no-convert)
         CONVERT_TO_YOLO=false
         shift
         ;;
     esac
 done
+
+# --- MODIFICATION: Create a unique subdirectory for this run ---
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+FINAL_OUTPUT_DIR="$BASE_OUTPUT_DIR/run_$TIMESTAMP"
+
+# Create the unique output directory before running anything
+mkdir -p "$FINAL_OUTPUT_DIR" || log_error_and_exit "Could not create output directory: $FINAL_OUTPUT_DIR"
 
 
 # --- Step 1: Data Generation ---

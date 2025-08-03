@@ -87,7 +87,7 @@ Assigns a unique color to each **instance** of an object. If there are two cars 
 
 # **Example YOLO Dataset**
 
-After running the `kitti_to_yolo.py` script on the generated Kitti data, a new, self-contained and portable `yolo_dataset` is created. This dataset is in the correct format for training modern object detection models like YOLOv5 and YOLOv8.
+After running the `kitti_to_yolo.py` script on the generated Kitti data, a new, self-contained and portable `yolo_dataset` is created. This dataset is in the correct format for training modern object detection models like YOLOv5, YOLOv8 and YOLO11.
 
 ## Dataset Structure
 
@@ -149,7 +149,7 @@ These are the same RGB images from the Kitti dataset, now split into `train` and
 
 ## **How to Use This Dataset for Training**
 
-With this structure, training a YOLOv8 model is a single command. Simply point the training script to the `data.yaml` file:
+With this structure, training a YOLOv8/YOLO11 model is a single command. Simply point the training script to the `data.yaml` file:
 
 ```bash
 yolo train data=/path/to/your/examples/yolo_dataset/data.yaml model=yolov8n.pt epochs=100 imgsz=640

@@ -105,11 +105,11 @@ Generate a large dataset of 20,000 frames in headless mode:
 
 ## Output ##
 
-The generated dataset will be saved in the directory specified by the OUTPUT_DIR variable in generate_data.sh. The output format is Kitti, which will include folders for rgb images and potentially other data types like bounding boxes if configured.
+The generated dataset will be saved in the directory specified by the OUTPUT_DIR variable in generate_data.sh. The output is formatted as a Kitti dataset, which will include folders for rgb images and potentially other data types like bounding boxes if configured. The Kitti dataset is then converted to a YOLO dataset.
 
 ## Cloud VM Setup (Google Cloud Platform)
 
-This project can be run on a cloud VM with a compatible NVIDIA GPU. The following instructions are for setting up a VM on Google Cloud Platform (GCP), but similar steps can be applied to other cloud providers like AWS or Azure.
+This project can be run on any setup that supports Isaac Sim. For example a cloud VM with a compatible NVIDIA GPU. The following instructions are for setting up a VM on Google Cloud Platform (GCP), but similar steps can be applied to other cloud providers like AWS or Azure.
 
 ### Prerequisites
 
@@ -205,7 +205,7 @@ Once the VM is running, you will need a graphical interface to run Isaac Sim in 
 Follow instructions online -> [Quick Install](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/quick-install.html)
 Install into ```/home/your_user/isaac-sim``` or similar path
 
-4.  **Verify the Installation:**
+**Verify the Installation:**
     The most important verification step is to ensure Isaac Sim can access the GPU correctly.
     -   Navigate to the Isaac Sim installation directory:
         ```bash

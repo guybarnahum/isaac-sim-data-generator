@@ -1,6 +1,5 @@
-This script was adapted from an original NVIDIA working example, it has been significantly modified to remove external dependencies 
-(like the Nucleus server) and to programmatically handle common issues in procedural content generation, such as asset scaling, 
-orientation, and pivot point correction.
+# Isaac Sim Dataset Generator
+This script was adapted from an original NVIDIA working example, it has been significantly modified to remove external dependencies (like the Nucleus server) and to programmatically handle common issues in procedural content generation, such as asset scaling, orientation, and pivot point correction.
 
 ## Key Features ##
 

@@ -16,7 +16,7 @@ parser.add_argument("--headless", action="store_true", help="Launch script in he
 parser.add_argument("--height", type=int, default=512, help="Height of the output image")
 parser.add_argument("--width", type=int, default=512, help="Width of the output image")
 parser.add_argument("--num_frames", type=int, default=1000, help="Number of frames to record")
-parser.add_argument("--asset_dir", type=str, default="/home/guyb/isaac-headless/data/assets", help="Root directory containing class subfolders of .usdz assets")
+parser.add_argument("--asset_dir", type=str, default="./assets", help="Root directory containing class subfolders of .usdz assets")
 parser.add_argument("--data_dir", type=str, default=os.getcwd() + "/local_asset_output", help="Location where data will be output")
 
 args, unknown_args = parser.parse_known_args()

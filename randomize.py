@@ -75,12 +75,40 @@ def random_point_on_hemisphere(min_radius, max_radius):
 def generate_points_on_hemisphere(min_radius, max_radius, num_points):
     return [random_point_on_hemisphere(min_radius, max_radius) for _ in range(num_points)]
 
-def run_orchestrator():
+def run_orchestrator(output_dir, total_frames):
+    """Starts and manages the Replicator pipeline, now with a progress indicator."""
+    
+    # The KittiWriter creates a specific subdirectory structure
+    rgb_output_path = os.path.join(output_dir, "Camera", "rgb")
+    
+    # Ensure the directory exists before we start monitoring it
+    os.makedirs(rgb_output_path, exist_ok=True)
+    
+    last_frame_count = -1
+
+    print(f"\nStarting data generation for {total_frames} frames...")
     rep.orchestrator.run()
     while rep.orchestrator.get_is_started():
         simulation_app.update()
+        
+        # Check the number of files in the output directory
+        try:
+            # Only count .png files to be specific
+            current_frame_count = len([name for name in os.listdir(rgb_output_path) if name.endswith(".png")])
+            # Only print an update if a new frame has been saved
+            if current_frame_count > last_frame_count:
+                # Use '\r' to return to the beginning of the line and overwrite it
+                print(f"\r  -> Progress: {current_frame_count}/{total_frames} frames generated...", end="")
+                last_frame_count = current_frame_count
+        except FileNotFoundError:
+            # The directory might not be created on the very first frame, so we pass
+            pass
+
+    # Print a final newline to move past the progress indicator line
+    print() 
     rep.BackendDispatch.wait_until_done()
     rep.orchestrator.stop()
+    print("Data generation complete.")
 
 # --- Main Logic ---
 def main():
@@ -171,8 +199,7 @@ def main():
     writer.attach(render_product)
 
     print(f"\nStarting data generation for {args.num_frames} frames...")
-    run_orchestrator()
-    print("Data generation complete.")
+    run_orchestrator(args.data_dir, args.num_frames)
 
 
 if __name__ == "__main__":

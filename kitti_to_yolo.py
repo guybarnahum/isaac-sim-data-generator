@@ -24,15 +24,12 @@ import shutil
 import yaml
 
 # --- Configuration ---
-
-# De facto standard class IDs from the COCO dataset
 COCO_CLASS_MAP = {
     "person": 0,
     "car": 2
 }
 
 # --- Helper Functions ---
-
 def load_config_from_env(env_path):
     """Reads KEY=VALUE pairs from a .env file and returns them as a dictionary."""
     config = {}
@@ -65,7 +62,6 @@ def convert_kitti_to_yolo(kitti_box, img_width, img_height):
 def process_dataset(input_dir, train_split):
     """
     Main processing function to convert the entire dataset.
-    The YOLO dataset will be created inside the input_dir.
     """
     # --- Define Paths ---
     kitti_labels_path = os.path.join(input_dir, "Camera", "object_detection")
@@ -101,16 +97,20 @@ def process_dataset(input_dir, train_split):
     valid_samples = valid_samples[split_index:]
 
     print(f"Processing {len(train_samples)} training samples and {len(valid_samples)} validation samples...")
+    total_samples = len(valid_samples)
+    
     for split_name, sample_list in [("train", train_samples), ("valid", valid_samples)]:
-        yolo_img_path = os.path.join(yolo_output_dir, "images", split_name)
-        yolo_lbl_path = os.path.join(yolo_output_dir, "labels", split_name)
-        
-        for sample_stem in sample_list:
+        print(f"\nProcessing '{split_name}' split...")
+        num_in_split = len(sample_list)
+
+        for j, sample_stem in enumerate(sample_list):
+            print(f"\r  -> Converting sample {j + 1}/{num_in_split}", end="")
+            
             kitti_lbl_file = os.path.join(kitti_labels_path, sample_stem + ".txt")
             source_img_file = os.path.join(kitti_images_path, sample_stem + ".png")
             
             try:
-                shutil.copy(source_img_file, yolo_img_path)
+                shutil.copy(source_img_file, os.path.join(yolo_output_dir, "images", split_name))
                 with Image.open(source_img_file) as img:
                     img_width, img_height = img.size
                 
@@ -128,19 +128,16 @@ def process_dataset(input_dir, train_split):
                         yolo_lines.append(f"{class_id} {yolo_box[0]} {yolo_box[1]} {yolo_box[2]} {yolo_box[3]}")
                 
                 if yolo_lines:
-                    yolo_lbl_file = os.path.join(yolo_lbl_path, sample_stem + ".txt")
+                    yolo_lbl_file = os.path.join(yolo_output_dir, "labels", split_name, sample_stem + ".txt")
                     with open(yolo_lbl_file, 'w') as f_out:
                         f_out.write("\n".join(yolo_lines))
             except Exception as e:
                 print(f"Error processing sample {sample_stem}: {e}")
                 
-    print("File conversion and copying complete.")
+    print("\nFile conversion and copying complete.")
     
     # --- Generate data.yaml file ---
     print("Generating data.yaml file...")
-    
-    # FINAL FIX: The most robust YAML structure for YOLOv5/v8.
-    # The paths are relative to the data.yaml file's location.
     yaml_data = {
         'train': 'images/train',
         'val': 'images/valid',

@@ -10,7 +10,7 @@ The generated data is organized into a main folder, `kitti-dataset`, which conta
 
 ### **1. RGB Images**
 
-This is the primary visual output of the simulation. Notice how the camera position and the placement and rotation of the assets change in every frame.
+This is the primary visual output of the simulation. Notice how the camera position and the placement and rotation of the assets change in every frame. (Notice also that one person is positioned below the surface due to issues with the usdz model and our failure to detect how to place it)
 
 -   **Location:** `kitti-dataset/Camera/rgb/`
 -   **Format:** `.png`

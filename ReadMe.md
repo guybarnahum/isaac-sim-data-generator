@@ -24,6 +24,7 @@ orientation, and pivot point correction.
 ```bash
 
 .
+├── .env.example
 ├── assets/
 │   ├── car/
 │   │   ├── car_1.usdz
@@ -32,18 +33,20 @@ orientation, and pivot point correction.
 │       ├── person_1.usdz
 │       └── person_2.usdz
 ├── generate_data.sh
-└── randomize.py
+├── randomize.py
+└── examples
+    ├── kitt-dataset/
+    └── yolo-dataset/
 
 ```
 
 ## Asset Location ##
 
-To use this script, you must organize your .usdz asset files into subdirectories within the assets/ folder. The name of each subdirectory will be used as the class label for all assets within it.
-Example: Place all car models in assets/car/ and all person models in assets/person/.
-The script will automatically detect these categories and apply the corresponding scaling rules defined in randomize.py.
+To use this script, you must organize your `.usdz` asset files into subdirectories within the `assets/ folder`. The name of each subdirectory will be used as the class label for all assets within it.
+Example: Place all car models in `assets/car/` and all person models in `assets/person/`.
+The script will automatically detect these categories and apply the corresponding scaling rules defined in `randomize.py`.
 
-
-### **Quick Start**
+## **Quick Start**
 
 1.  **Clone the Repository:**
     ```bash
@@ -58,7 +61,10 @@ The script will automatically detect these categories and apply the correspondin
     ```
     Now, open `.env` with a text editor and set the `ISAAC_SIM_PATH` and `PROJECT_ROOT_PATH` variables to match your system's paths.
 
-3.  **Run the Script:**
+3.  **Setup Assets**
+    Place all car models in `isaac-sim-data-generator/assets/car/` and all person models in `isaac-sim-data-generator/assets/person/`.
+    
+5.  **Run the Script:**
     Make the script executable and run it.
     ```bash
     chmod +x generate_data.sh

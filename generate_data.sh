@@ -109,8 +109,8 @@ if [ "$CONVERT_TO_YOLO" = true ]; then
         log_error_and_exit "Converter script not found at: $CONVERT_SCRIPT_PATH"
     fi
     
-    # Run the conversion script using the system's python3
-    python3 "$CONVERT_SCRIPT_PATH" --input_dir "$FINAL_OUTPUT_DIR"
+    # Run the conversion script
+    ./python.sh "$CONVERT_SCRIPT_PATH" --input_dir "$FINAL_OUTPUT_DIR"
     
     echo "--- YOLO Conversion Finished ---"
 else

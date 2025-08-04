@@ -1,3 +1,5 @@
+<img src="examples/animate.gif" width="100%"/>
+
 # Isaac Sim Dataset Generator
 
 [Isaac Sim](https://developer.nvidia.com/isaac/sim) is is a reference application built on NVIDIA Omniverse™ that enables developers to simulate and test AI-driven robotics solutions in physically based virtual environments.

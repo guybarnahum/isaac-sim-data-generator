@@ -108,12 +108,19 @@ Generate a large dataset of 20,000 frames in headless mode:
 
 ## Output ##
 
-The generated dataset will be saved in the directory specified by the OUTPUT_DIR variable in generate_data.sh. The output is formatted as a Kitti dataset, which will include folders for rgb images and potentially other data types like bounding boxes if configured. The Kitti dataset is then converted to a YOLO dataset.
+[View Examples](examples/) for the output dataset layout.
+
+The generated dataset will be saved in the directory specified by the `OUTPUT_DIR` variable in `generate_data.sh`. The output is formatted as a Kitti dataset, which will include folders for rgb images and potentially other data types like bounding boxes if configured. The Kitti dataset is then converted to a YOLO dataset.
+
+When omitted, `OUTPUT_DIR` defaults to `$PROJECT_DIR/output/run_$TIMESTAMP`.
 
 ## Cloud VM Setup (Google Cloud Platform)
 
 This project can be run on any setup that supports Isaac Sim. For example a cloud VM with a compatible NVIDIA GPU. The following instructions are for setting up a VM on Google Cloud Platform (GCP), but similar steps can be applied to other cloud providers like AWS or Azure.
 
+<details>
+<summary>Installation Details</summary>
+    
 ### Prerequisites
 
 -   A Google Cloud Platform account with billing enabled.
@@ -250,3 +257,5 @@ GPU: NVIDIA L4
 ```
 
 If you see CUDA available: True and the correct GPU name, your installation is successful and ready to run the data generation script.
+
+</details>

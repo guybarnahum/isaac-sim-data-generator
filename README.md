@@ -118,6 +118,9 @@ When omitted, `OUTPUT_DIR` defaults to `$PROJECT_DIR/output/run_$TIMESTAMP`.
 
 This project can be run on any setup that supports Isaac Sim. For example a cloud VM with a compatible NVIDIA GPU. The following instructions are for setting up a VM on Google Cloud Platform (GCP), but similar steps can be applied to other cloud providers like AWS or Azure.
 
+<details>
+<summary>Installation Details</summary>
+    
 ### Prerequisites
 
 -   A Google Cloud Platform account with billing enabled.
@@ -254,3 +257,5 @@ GPU: NVIDIA L4
 ```
 
 If you see CUDA available: True and the correct GPU name, your installation is successful and ready to run the data generation script.
+
+</details>

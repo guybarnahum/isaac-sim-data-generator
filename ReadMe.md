@@ -200,44 +200,6 @@ Once the VM is running, you will need a graphical interface to run Isaac Sim in 
     ```
 3.  **Connect:** Open your VNC client and connect to `localhost:5901`. Enter the VNC password you created. You should now see the XFCE desktop of your GCP VM.
 
-### 4. Install and Verify Isaac Sim
-
-Follow instructions online -> [Quick Install](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/quick-install.html)
-Install into ```/home/your_user/isaac-sim``` or similar path
-
-**Verify the Installation:**
-    The most important verification step is to ensure Isaac Sim can access the GPU correctly.
-    -   Navigate to the Isaac Sim installation directory:
-        ```bash
-        cd /home/your_user/isaac-sim
-        ```
-    -   Run the `python.sh` script with a simple test that prints GPU information. Create a temporary Python file:
-        ```bash
-        nano gpu_test.py
-        ```
-    -   Paste the following code into the file:
-        ```python
-        import torch
-        print(f"PyTorch version: {torch.__version__}")
-        print(f"CUDA available: {torch.cuda.is_available()}")
-        if torch.cuda.is_available():
-            print(f"CUDA version: {torch.version.cuda}")
-            print(f"GPU: {torch.cuda.get_device_name(0)}")
-        ```
-    -   Save and exit (`Ctrl+X`, `Y`, `Enter`).
-    -   Now, run the test:
-        ```bash
-        ./python.sh gpu_test.py
-        ```
-    -   **Expected Output:** You should see something like this, confirming that PyTorch (used by Isaac Sim) can see the GPU:
-        ```
-        PyTorch version: 2.0.1+cu118
-        CUDA available: True
-        CUDA version: 11.8
-        GPU: NVIDIA L4
-        ```
-    If you see `CUDA available: True` and the correct GPU name, your installation is successful and ready to run the data generation script.
-
 
 ### 4. Install and Verify Isaac Sim
 

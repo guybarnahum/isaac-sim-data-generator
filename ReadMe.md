@@ -1,4 +1,7 @@
 # Isaac Sim Dataset Generator
+
+[Isaac Sim](https://developer.nvidia.com/isaac/sim) is is a reference application built on NVIDIA Omniverse™ that enables developers to simulate and test AI-driven robotics solutions in physically based virtual environments.
+
 This script was adapted from an original NVIDIA working example, it has been significantly modified to remove external dependencies (like the Nucleus server) and to programmatically handle common issues in procedural content generation, such as asset scaling, orientation, and pivot point correction.
 
 ## Key Features ##
@@ -72,7 +75,7 @@ The script will automatically detect these categories and apply the correspondin
 
 ## Usage ##
 
-The generate_data.sh script is the primary way to run the simulation. It accepts two optional command-line arguments.
+The `generate_data.sh` script is the primary way to run the simulation. It accepts two optional command-line arguments.
 
 ### Running in GUI Mode (for Inspection) ###
 

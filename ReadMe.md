@@ -237,3 +237,51 @@ Install into ```/home/your_user/isaac-sim``` or similar path
         GPU: NVIDIA L4
         ```
     If you see `CUDA available: True` and the correct GPU name, your installation is successful and ready to run the data generation script.
+
+
+### 4. Install and Verify Isaac Sim
+
+Follow the official instructions online for a [Quick Install](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/quick-install.html) of Isaac Sim. It is recommended to install it into a path like `/home/your_user/isaac-sim`.
+
+#### Verify the Installation
+
+The most important verification step is to ensure Isaac Sim can access the GPU correctly.
+
+1.  Navigate to the Isaac Sim installation directory:
+    ```bash
+    cd /home/your_user/isaac-sim
+    ```
+
+2.  Create a temporary Python file to test the GPU:
+    ```bash
+    nano gpu_test.py
+    ```
+
+3.  Paste the following code into the file. This script checks if PyTorch (a core dependency of Isaac Sim) can detect the CUDA-enabled GPU. Save and exit (`Ctrl+X`, `Y`, `Enter`).
+    ```python
+    import torch
+
+    print(f"PyTorch version: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")
+
+    if torch.cuda.is_available():
+        print(f"CUDA version: {torch.version.cuda}")
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
+    ```
+
+4.  Now, run the test using Isaac Sim's bundled Python environment:
+    ```bash
+    ./python.sh gpu_test.py
+    ```
+
+##### Expected Output
+
+You should see output similar to the following, confirming that PyTorch can see and identify your GPU:
+```text
+PyTorch version: 2.0.1+cu118
+CUDA available: True
+CUDA version: 11.8
+GPU: NVIDIA L4
+```
+
+If you see CUDA available: True and the correct GPU name, your installation is successful and ready to run the data generation script.

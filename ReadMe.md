@@ -108,7 +108,11 @@ Generate a large dataset of 20,000 frames in headless mode:
 
 ## Output ##
 
-The generated dataset will be saved in the directory specified by the OUTPUT_DIR variable in generate_data.sh. The output is formatted as a Kitti dataset, which will include folders for rgb images and potentially other data types like bounding boxes if configured. The Kitti dataset is then converted to a YOLO dataset.
+[View Examples](examples/)``` for the output dataset layout.
+
+The generated dataset will be saved in the directory specified by the `OUTPUT_DIR` variable in `generate_data.sh`. The output is formatted as a Kitti dataset, which will include folders for rgb images and potentially other data types like bounding boxes if configured. The Kitti dataset is then converted to a YOLO dataset.
+
+When omitted, `OUTPUT_DIR` defaults to `$PROJECT_DIR/output/run_$TIMESTAMP`.
 
 ## Cloud VM Setup (Google Cloud Platform)
 
